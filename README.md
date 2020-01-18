@@ -26,6 +26,7 @@ A boilerplate python project that implements a CLI, logging, settings and file-b
     * `settings.py` defines program operating settings.
 * `config/` contains program JSON configuration files.
 * `tests/` contains tests for the project (pytest).
+* `logs/` contains program logs (debug, error, default).
 * `main.py` is the main entry point of the program.
 </br>
 
