@@ -3,62 +3,14 @@ from logging import getLogger
 from argparse import ArgumentParser
 import json
 
-import app.settings as settings
-from app.logging import create_logger
+from app import settings, logging
+from app.cli import cli
 
 
-# -----------------------------------------------------------------------------
-# CLI Definition
-
-def cli(argv):
-    '''
-    Initialize our argument parser given arguments and
-    return the parsed args & parser.
-    '''
-
-    # argv[0] is always the filename being executed.
-    # In this case it is the name of our program/entry point.
-    program_name = argv[0]
-
-    # Create an argument parser to handle our command line arguments.
-    parser = ArgumentParser(
-        prog=program_name,
-        description=settings.PROGRAM_DESCRIPTION
-    )
-
-    # Configuration File Path (Optional)
-    parser.add_argument(
-        '-c', '--config',
-        type=str,
-        required=False,
-        metavar='json_file',
-        default=settings.CONFIG_FILE_PATH,
-        help='specify config file path'
-    )
-
-    # Verbose mode switch
-    parser.add_argument(
-        '-v', '--verbose',
-        action='store_true'
-    )
-
-    # Output program version information.
-    parser.add_argument(
-        '--version',
-        action='version',
-        version=f'{settings.PROGRAM_NAME_VERBOSE} {settings.PROGRAM_VERSION}'
-    )
-
-    # Parse the arguments via our argument parser.
-    args = parser.parse_args(argv[1:])
-
-    # Return our args and the parser for parser.print_help(), etc.
-    return (args, parser)
+logger = logging.get_logger(__name__)
 
 
 def init(args):
-    logger = create_logger(__name__, args.verbose)
-
     # If the config directory doesn't exist, create it.
     if not os.path.exists(settings.CONFIG_DIR):
         logger.warning(f'Config directory does not exist at: {settings.CONFIG_DIR}')
@@ -71,10 +23,10 @@ def init(args):
             raise ioe
 
     # If the config file doesn't exist, write the default config to it.
-    if not os.path.exists(settings.CONFIG_FILE_PATH):
+    if not os.path.exists(settings.CONFIG_FILE):
         logger.warning(f'Default config file does not exist at: {settings.CONFIG_FILE_PATH}')
         try:
-            with open(settings.CONFIG_FILE_PATH, 'w+') as config_file:
+            with open(settings.CONFIG_FILE, 'w+') as config_file:
                 json.dump(settings.DEFAULT_CONFIG, config_file)
             logger.success('Created default config file')
         except IOError as ioe:
@@ -94,8 +46,6 @@ def load_config(args):
     from settings.py.
     '''
 
-    logger = getLogger(__name__)
-
     config_path = args.config
 
     try:
@@ -106,7 +56,7 @@ def load_config(args):
         logger.success('Configuration loaded')
     except (IOError, OSError) as e:
         # Configuration file does not exist, use default config.
-        logger.error(e.args[1])
+        logger.error(e)
         logger.failure(f'Failed to load configuration from file')
         logger.info(f'Using default configuration')
         config = settings.DEFAULT_CONFIG
@@ -116,8 +66,6 @@ def load_config(args):
 
 
 def process(args, config):
-    logger = getLogger(__name__)
-
     # Get value A.
     value_a = config['value_a']
     logger.info(f'A: {value_a}')
@@ -133,6 +81,8 @@ def process(args, config):
         # Let's add our values in this case.
         sums = value_a + value_b
         logger.info(f'A + B = {sums}')
+
+    logger.success('App finished processing')
 
     # Return successfully
     return os.EX_OK
