@@ -1,3 +1,4 @@
 **logs/
 **.pytest_cache/
 Pipfile.lock
+**.vscode/
