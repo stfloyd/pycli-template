@@ -2,3 +2,4 @@
 **.pytest_cache/
 Pipfile.lock
 **.vscode/
+**__pycache__/
