@@ -1,5 +1,5 @@
-**logs/
-**.pytest_cache/
+**logs
+**.pytest_cache
 Pipfile.lock
-**.vscode/
-**__pycache__/
+**.vscode
+**__pycache__
