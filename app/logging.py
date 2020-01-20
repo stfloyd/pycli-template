@@ -52,10 +52,6 @@ def create_file_handler(level, filename, formatter):
     Creates a file handler for file logging output.
     """
 
-    # handler = logging.FileHandler(
-    #     filename=filename,
-    #     encoding="utf-8", mode="w"
-    # )
     handler = RotatingFileHandler(
         filename,
         maxBytes=settings.LOG_FILE_MAX_KB*1000,
