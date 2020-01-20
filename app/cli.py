@@ -1,3 +1,4 @@
+import os
 import sys
 import logging
 from argparse import ArgumentParser, RawTextHelpFormatter
@@ -33,6 +34,13 @@ def cli(argv):
         metavar='FILE',
         default=settings.CONFIG_FILE,
         help='specify config file path'
+    )
+
+    # List available configs
+    parser.add_argument(
+        '-l', '--list-configs',
+        action='store_true',
+        help='print a list of available configs'
     )
 
     # Verbose mode switch

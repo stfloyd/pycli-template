@@ -94,3 +94,8 @@ TIMEZONE = 'America/New_York'
 DEFAULT_CONFIG = {
     'value_a': 10
 }
+
+
+def list_configs():
+    config_files = [f for f in os.listdir(CONFIG_DIR) if os.path.isfile(os.path.join(CONFIG_DIR, f))]
+    return config_files

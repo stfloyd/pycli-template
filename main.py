@@ -6,7 +6,7 @@ import errno
 import json
 
 import app
-from app import logging
+from app import settings, logging
 
 
 # -----------------------------------------------------------------------------
@@ -31,6 +31,11 @@ def main(argv):
         #parser.print_help()
         #sys.exit(errno.EAGAIN)
 
+    if args.list_configs:
+        configs = settings.list_configs()
+        print(configs)
+        return os.EX_OK
+
     # Initialize our app.
     try:
         app.init(args)
@@ -39,7 +44,7 @@ def main(argv):
         logger.failure(f'App initialization failed: {e.errno}')
         parser.print_help()
         return os.EX_SOFTWARE
-    
+
     # Load application configuration.
     try:
         config = app.load_config(args)

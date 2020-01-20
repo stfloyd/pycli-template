@@ -56,10 +56,21 @@ def load_config(args):
         logger.success('Configuration loaded')
     except (IOError, OSError) as e:
         # Configuration file does not exist, use default config.
-        logger.error(e)
+
         logger.failure(f'Failed to load configuration from file')
-        logger.info(f'Using default configuration')
-        config = settings.DEFAULT_CONFIG
+
+        # See if it's in config directory if that wasn't already specified.
+        appended_path = os.path.join('config/', config_path)
+        try:
+            logger.info(f'Attempt #2: Loading configuration from file: {appended_path}')
+            with open(appended_path) as config_file:
+                config = json.load(config_file)
+            logger.success('Configuration loaded')
+        except (IOError, OSError) as e2:
+            logger.error(e)
+            logger.error(e2)
+            logger.info(f'Using default configuration')
+            config = settings.DEFAULT_CONFIG
     
     logger.debug(f'Configuration: {config}')
     return config
