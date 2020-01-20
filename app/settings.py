@@ -74,7 +74,7 @@ STREAM_LOGGERS = [
 # 0         1           2               3               4           5
 # level     mailhost    credentials     from address    to address  subject
 SMTP_LOGGERS = [
-    (logging.ERROR, SMTP_MAILHOST, SMTP_CREDENTIALS, SMTP_FROM_ADDR, SMTP_TO_ADDR, 'CHC Import Error')
+    (logging.ERROR, SMTP_MAILHOST, SMTP_CREDENTIALS, SMTP_FROM_ADDR, SMTP_TO_ADDR, 'App Error')
 ]
 
 
