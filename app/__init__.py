@@ -1,99 +1,41 @@
 import os
-from logging import getLogger
-from argparse import ArgumentParser
-import json
+import sys
+import warnings
 
-from app import settings, logging
-from app.cli import cli
+from .__version__ import __version__
 
 
-logger = logging.get_logger(__name__)
+# -----------------------------------------------------------------------------
+# Application Information
 
+APP_NAME = 'app'
+APP_NAME_VERBOSE = 'Python CLI Template'
+APP_DESCRIPTION = 'A python command line utility.'
+APP_VERSION = __version__
 
-def init(args):
-    # If the config directory doesn't exist, create it.
-    if not os.path.exists(settings.CONFIG_DIR):
-        logger.warning(f'Config directory does not exist at: {settings.CONFIG_DIR}')
-        try:
-            os.makedirs(settings.CONFIG_DIR)
-            logger.success('Created config directory')
-        except IOError as ioe:
-            logger.error(ioe)
-            logger.failure('Unable to create config directory')
-            raise ioe
+APP_CLI_HELP_TEXT = \
+f"""
+{APP_NAME_VERBOSE}
+{APP_DESCRIPTION}
 
-    # If the config file doesn't exist, write the default config to it.
-    if not os.path.exists(settings.CONFIG_FILE):
-        logger.warning(f'Default config file does not exist at: {settings.CONFIG_FILE_PATH}')
-        try:
-            with open(settings.CONFIG_FILE, 'w+') as config_file:
-                json.dump(settings.DEFAULT_CONFIG, config_file)
-            logger.success('Created default config file')
-        except IOError as ioe:
-            logger.error(ioe)
-            logger.failure('Unable to create default config file')
-            raise ioe
+ _                 _    
+| |               | |   
+| |__   ___  _ __ | | __
+| '_ \ / _ \| '_ \| |/ /
+| | | | (_) | | | |   < 
+|_| |_|\___/|_| |_|_|\_\ 
+"""
 
-    logger.success('App initialized')
-    
-    return True
+APP_ROOT = os.path.abspath(os.path.dirname(os.path.realpath(__file__)))
 
+APP_DEFAULT_CONFIG = {
+    'test': 0
+}
 
-def load_config(args):
-    '''
-    Load app configuration from JSON file.
-    If JSON file cannot be found, it will return the default configuration
-    from settings.py.
-    '''
+from .core import AppConfig
+config = AppConfig()
 
-    config_path = args.config
+from .cli import cli
 
-    try:
-        logger.info(f'Loading configuration from file: {config_path}')
-        with open(config_path) as config_file:
-            # Attempt to open the configuration file if it exists.
-            config = json.load(config_file)
-        logger.success('Configuration loaded')
-    except (IOError, OSError) as e:
-        # Configuration file does not exist, use default config.
-
-        logger.failure(f'Failed to load configuration from file')
-
-        # See if it's in config directory if that wasn't already specified.
-        appended_path = os.path.join('config/', config_path)
-        try:
-            logger.info(f'Attempt #2: Loading configuration from file: {appended_path}')
-            with open(appended_path) as config_file:
-                config = json.load(config_file)
-            logger.success('Configuration loaded')
-        except (IOError, OSError) as e2:
-            logger.error(e)
-            logger.error(e2)
-            logger.info(f'Using default configuration')
-            config = settings.DEFAULT_CONFIG
-    
-    logger.debug(f'Configuration: {config}')
-    return config
-
-
-def process(args, config):
-    # Get value A.
-    value_a = config['value_a']
-    logger.info(f'A: {value_a}')
-
-    # Get value B.
-    # Test for value not in default config.
-    if 'value_b' in config:
-        # The value exists from loaded configuration, proceed.
-        value_b = config['value_b']
-        logger.debug(f'\'value_b\' found in config ({args.config}): {value_b}')
-        logger.info(f'B: {value_b}')
-        
-        # Let's add our values in this case.
-        sums = value_a + value_b
-        logger.info(f'A + B = {sums}')
-
-    logger.success('App finished processing')
-
-    # Return successfully
-    return os.EX_OK
+if __name__ == "__main__":
+    cli(sys.argv)
